@@ -9,6 +9,10 @@ interface IAppConfigForCommon {
     source: string;
 
     target: string;
+
+    client: string;
+
+    server: string;
   };
 }
 
@@ -21,27 +25,27 @@ interface IAppConfigForRender {
 
 interface IAppConfig extends IAppConfigForCommon, IAppConfigForRender, IAppConfigForServer {}
 
-function getAppConfigRoot(input: any): string {
+function getAppConfigRoot(input: string | any): string {
   if (input && typeof input === 'string') { return input; }
   throw new Error('config.root must be a string');
 }
 
-function getAppConfigMode(input: any): TAppConfigMode {
+function getAppConfigMode(input: string | any): TAppConfigMode {
   const typedInput = typeof input === 'string' ? input : process.env.NODE_ENV || '';
   return typedInput.toLowerCase().startsWith('dev') ? 'dev' : 'prod';
 }
 
-function getAppConfigDirs(input: any, fallback: string): string {
+function getAppConfigDirs(input: string | any, fallback: string): string {
   if (input && typeof input === 'string') { return input; }
   return fallback;
 }
 
-function getAppConfigPort(input: any): number {
-  if (typeof input === 'number') { return input; }
-  return 0;
+function getAppConfigPort(input: number | any): number {
+  if (typeof input === 'number' && input > 0 && input < 65536) { return input; }
+  return Number(input) || 3001;
 }
 
-export function verifyConfig(config: any): IAppConfig {
+export function verifyConfig(config: Partial<IAppConfig> | any): IAppConfig {
   if (!config || typeof config !== 'object') {
     throw new Error('config must be an object');
   }
@@ -50,14 +54,13 @@ export function verifyConfig(config: any): IAppConfig {
   verifiedConfig.mode = getAppConfigMode(config.mode);
   verifiedConfig.dirs = {
     source: getAppConfigDirs(config.dirs?.source, 'src'),
-    target: getAppConfigDirs(config.dirs?.target, 'build')
+    target: getAppConfigDirs(config.dirs?.target, 'build'),
+    client: getAppConfigDirs(config.dirs?.client, ''),
+    server: getAppConfigDirs(config.dirs?.server, '')
   };
 
   // verify server config
-  if (typeof config.port === 'number') {
-    // port = 0 means auto port discovery
-    verifiedConfig.port = getAppConfigPort(config.port);
-  }
+  verifiedConfig.port = getAppConfigPort(config.port);
 
   // verify render config
   // TODO
@@ -67,6 +70,6 @@ export function verifyConfig(config: any): IAppConfig {
 
 export type {
   IAppConfig
-}
+};
 
-export default verifyConfig
+export default verifyConfig;

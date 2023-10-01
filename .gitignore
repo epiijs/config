@@ -1,6 +1,8 @@
 # Custom
 build/
 package-lock.json
+.vscode
+.DS_Store
 
 # Logs
 logs
