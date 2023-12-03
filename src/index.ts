@@ -68,7 +68,8 @@ export function verifyConfig(config: IMaybeAppConfig | any): IAppConfig {
 export default verifyConfig;
 
 export type {
-  IAppConfig
+  IAppConfig,
+  IMaybeAppConfig
 };
 
 /* more utilities */
