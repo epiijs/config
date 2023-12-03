@@ -1,6 +1,6 @@
 {
   "name": "@epiijs/config",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "A parser for epii app config.",
   "main": "build/index.js",
   "keywords": [
@@ -16,7 +16,7 @@
   "devDependencies": {
     "@epiijs/eslint-config": "^0.1.4",
     "@tsconfig/node18": "^18.2.2",
-    "@types/node": "^18.18.1",
-    "eslint": "^8.50.0"
+    "@types/node": "^18.19.1",
+    "eslint": "^8.55.0"
   }
 }

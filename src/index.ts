@@ -1,38 +1,34 @@
-type TAppConfigMode = 'prod' | 'dev';
-
-interface IAppConfigForCommon {
+interface IAppConfig {
   root: string;
-
-  mode: TAppConfigMode;
-
   dirs: {
     source: string;
-
     target: string;
-
     client: string;
-
     server: string;
+  };
+  port: {
+    client: number;
+    server: number;
   };
 }
 
-interface IAppConfigForServer {
-  port: number;
+interface IMaybeAppConfig {
+  root: string;
+  dirs?: {
+    source?: string;
+    target?: string;
+    client?: string;
+    server?: string;
+  };
+  port?: number | {
+    client?: number;
+    server?: number;
+  };
 }
-
-interface IAppConfigForRender {
-}
-
-interface IAppConfig extends IAppConfigForCommon, IAppConfigForRender, IAppConfigForServer {}
 
 function getAppConfigRoot(input: string | any): string {
   if (input && typeof input === 'string') { return input; }
   throw new Error('config.root must be a string');
-}
-
-function getAppConfigMode(input: string | any): TAppConfigMode {
-  const typedInput = typeof input === 'string' ? input : process.env.NODE_ENV || '';
-  return typedInput.toLowerCase().startsWith('dev') ? 'dev' : 'prod';
 }
 
 function getAppConfigDirs(input: string | any, fallback: string): string {
@@ -40,36 +36,50 @@ function getAppConfigDirs(input: string | any, fallback: string): string {
   return fallback;
 }
 
-function getAppConfigPort(input: number | any): number {
-  if (typeof input === 'number' && input > 0 && input < 65536) { return input; }
-  return Number(input) || 3001;
+function getAppConfigPort(input: number | any): IAppConfig['port'] {
+  const isPortValue = (v?: number) => v && typeof v === 'number' && v > 0 && v < 65536;
+  const result: IAppConfig['port'] = { client: 3000, server: 3001 };
+  if (typeof input === 'object' && input) {
+    result.client = isPortValue(input.client) ? input.client : 3000;
+    result.server = isPortValue(input.server) ? input.server : result.client + 1;
+  } else if (isPortValue(input)) {
+    result.client = input;
+    result.server = input + 1;
+  }
+  return result;
 }
 
-export function verifyConfig(config: Partial<IAppConfig> | any): IAppConfig {
+export function verifyConfig(config: IMaybeAppConfig | any): IAppConfig {
   if (!config || typeof config !== 'object') {
     throw new Error('config must be an object');
   }
   const verifiedConfig: Partial<IAppConfig> = {};
   verifiedConfig.root = getAppConfigRoot(config.root);
-  verifiedConfig.mode = getAppConfigMode(config.mode);
   verifiedConfig.dirs = {
     source: getAppConfigDirs(config.dirs?.source, 'src'),
     target: getAppConfigDirs(config.dirs?.target, 'build'),
     client: getAppConfigDirs(config.dirs?.client, ''),
     server: getAppConfigDirs(config.dirs?.server, '')
   };
-
-  // verify server config
   verifiedConfig.port = getAppConfigPort(config.port);
-
-  // verify render config
-  // TODO
-
   return verifiedConfig as IAppConfig;
 }
+
+export default verifyConfig;
 
 export type {
   IAppConfig
 };
 
-export default verifyConfig;
+/* more utilities */
+
+type TAppConfigMode = 'prod' | 'dev';
+
+function getAppConfigMode(input: string | any): TAppConfigMode {
+  const typedInput = typeof input === 'string' ? input : process.env.NODE_ENV || '';
+  return typedInput.toLowerCase().startsWith('dev') ? 'dev' : 'prod';
+}
+
+export {
+  getAppConfigMode
+};
