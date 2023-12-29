@@ -1,5 +1,3 @@
-import { DeprecatedKeysOfMore } from './const';
-
 interface IAppConfig {
   root: string;
   dirs: {
@@ -13,7 +11,6 @@ interface IAppConfig {
     client: number;
     server: number;
   };
-  more: Record<string, unknown>;
 }
 
 interface IMaybeAppConfig {
@@ -29,7 +26,6 @@ interface IMaybeAppConfig {
     client?: string | number;
     server?: string | number;
   };
-  more?: any;
 }
 
 function getStringOrFallback(input: string | any, fallback: string): string {
@@ -67,16 +63,6 @@ function getAppConfigPort(input: string | number | any): IAppConfig['port'] {
   return result;
 }
 
-function getAppConfigMore(input: any): Record<string, unknown> {
-  const result = getRecordOrFallback(input);
-  DeprecatedKeysOfMore.forEach(key => {
-    if (result[key] != null) {
-      console.log(`config.more.${key} is deprecated`);
-    }
-  });
-  return result;
-}
-
 export function verifyConfig(config: IMaybeAppConfig | any): IAppConfig {
   if (!config || typeof config !== 'object') {
     throw new Error('config must be an object');
@@ -92,7 +78,6 @@ export function verifyConfig(config: IMaybeAppConfig | any): IAppConfig {
   };
   verifiedConfig.name = getStringOrFallback(config.name, 'unknown');
   verifiedConfig.port = getAppConfigPort(config.port);
-  verifiedConfig.more = getAppConfigMore(config.more);
   return verifiedConfig as IAppConfig;
 }
 
