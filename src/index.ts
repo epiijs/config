@@ -1,3 +1,9 @@
+import {
+  getDirNameByImportMeta,
+  getRecordOrFallback,
+  getStringOrFallback
+} from './utils.js';
+
 interface IAppConfig {
   root: string;
   dirs: {
@@ -28,20 +34,10 @@ interface IMaybeAppConfig {
   };
 }
 
-function getStringOrFallback(input: string | any, fallback: string): string {
-  if (input && typeof input === 'string') { return input; }
-  return fallback;
-}
-
-function getRecordOrFallback(input: object | any, fallback?: Record<string, unknown>): Record<string, unknown> {
-  if (input && typeof input === 'object') {
-    return Object.assign({}, input) as Record<string, unknown>;
-  }
-  return fallback || {};
-}
-
 function getAppConfigRoot(input: string | any): string {
-  if (input && typeof input === 'string') { return input; }
+  if (input && typeof input === 'string') {
+    return input;
+  }
   throw new Error('config.root must be a string');
 }
 
@@ -82,6 +78,10 @@ export function verifyConfig(config: IMaybeAppConfig | any): IAppConfig {
 }
 
 export default verifyConfig;
+
+export {
+  getDirNameByImportMeta
+};
 
 export type {
   IAppConfig,
