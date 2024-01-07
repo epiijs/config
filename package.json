@@ -1,6 +1,6 @@
 {
   "name": "@epiijs/config",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "A parser for epiijs app config.",
   "type": "module",
   "main": "build/index.js",
