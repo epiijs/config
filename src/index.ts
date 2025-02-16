@@ -2,8 +2,7 @@ import {
   getStringOrFallback,
   getRecordOrFallback,
   getDirNameByImportMeta,
-  getSafePathOrThrow,
-  getSafeFlagOrThrow
+  getSafePathOrThrow
 } from './utils.js';
 
 interface IAppConfig {
@@ -19,8 +18,7 @@ interface IAppConfig {
     client: number;
     server: number;
   };
-  flag: Record<string, unknown>;
-  user: Record<string, unknown>;
+  mute: boolean;
 }
 
 interface IMaybeAppConfig {
@@ -36,8 +34,7 @@ interface IMaybeAppConfig {
     client?: string | number;
     server?: string | number;
   };
-  flag?: unknown;
-  user?: unknown;
+  mute?: boolean;
 }
 
 function getAppConfigRoot(input: string | any): string {
@@ -83,8 +80,7 @@ export function verifyConfig(config: IMaybeAppConfig | any): IAppConfig {
   }
   verifiedConfig.name = getStringOrFallback(config.name, 'unknown');
   verifiedConfig.port = getAppConfigPort(config.port);
-  verifiedConfig.flag = getSafeFlagOrThrow(getRecordOrFallback(config.flag, {}));
-  verifiedConfig.user = getRecordOrFallback(config.user, {});
+  verifiedConfig.mute = config.mute || false;
   return verifiedConfig as IAppConfig;
 }
 

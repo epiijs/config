@@ -28,30 +28,9 @@ function getSafePathOrThrow(input: string): string {
   return input;
 }
 
-function getSafeFlagOrThrow(input: Record<string, unknown>): Record<string, unknown> {
-  type FlagRuleFn = (value: unknown) => boolean;
-  const flagRules: Record<string, FlagRuleFn> = {
-    'verbose': () => true
-  };
-  const output: Record<string, unknown> = {};
-  for (const key in input) {
-    const rule = flagRules[key];
-    if (!rule) {
-      console.log(`config flags['${key}'] is ignored`);
-      continue;
-    }
-    if (!rule(input[key])) {
-      throw new Error(`config flags['${key}'] is refused`);
-    }
-    output[key] = input[key];
-  }
-  return output;
-}
-
 export {
   getStringOrFallback,
   getRecordOrFallback,
   getDirNameByImportMeta,
-  getSafePathOrThrow,
-  getSafeFlagOrThrow
-}
+  getSafePathOrThrow
+};
