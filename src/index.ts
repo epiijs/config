@@ -18,7 +18,9 @@ interface IAppConfig {
     client: number;
     server: number;
   };
-  mute: boolean;
+  side: {
+    [key: string]: unknown;
+  };
 }
 
 interface IMaybeAppConfig {
@@ -34,7 +36,9 @@ interface IMaybeAppConfig {
     client?: string | number;
     server?: string | number;
   };
-  mute?: boolean;
+  side?: {
+    [key: string]: unknown;
+  };
 }
 
 function getAppConfigRoot(input: string | any): string {
@@ -80,7 +84,7 @@ export function verifyConfig(config: IMaybeAppConfig | any): IAppConfig {
   }
   verifiedConfig.name = getStringOrFallback(config.name, 'unknown');
   verifiedConfig.port = getAppConfigPort(config.port);
-  verifiedConfig.mute = config.mute || false;
+  verifiedConfig.side = getRecordOrFallback(config.side, {});
   return verifiedConfig as IAppConfig;
 }
 
